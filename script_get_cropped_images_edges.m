@@ -4,22 +4,51 @@ clear; close all; clc; % need to delete any potential movie objects
 process_files = 1; % Saves Timestamps
 find_rect     = 0; % Finds and saves cropping rectangle
 find_rot      = 0; % Finds and DISPLAYS first rotation angle (needs find_rect)
-save_cropped  = 0; % Saves cropped images
+save_cropped  = 1; % Saves cropped images
 load_cropped  = 0; % Uses cropped images instead of reprocessing originals
 check_scale   = 0; % Check formatting of the video image
 movie_on      = 0; % Actually save as movie (becoming less important)
 
-data_dir = '/Volumes/Data Storage/Marketing_Videos_ST4/';
-trialnums = 8;
+% Find directory dynamically
+dirparts = strsplit(pwd, '/');
+data_dir = [];
+for pi = 1:length(dirparts)-1
+    data_dir = [data_dir, dirparts{pi}, filesep];
+end
+disp(['Processing from directory: ',data_dir]);
+
+% Find number of trials dynamically
+trialnums = 0;
+if ~trialnums
+    subfolders = glob([data_dir,'*/']); % gets all subfolders
+    trialmax = 0;
+    for ii = 1:length(subfolders)
+        query = regexp(subfolders{ii},[data_dir,'Trial*']);
+        if query
+            trialmax = trialmax + 1;
+        end
+    end
+    if trialmax
+        disp([num2str(trialmax) ,' trials found, processing...']);
+        trialnums = 1:trialmax;
+    else
+        disp(['No trials found, exiting...']);
+    end
+else
+    disp('Processing chosen trials...');
+%     trialnums = 1:4;
+end
+
 for trialnum = trialnums
     extra_dir = '/full_cam/';
     source_dir = [data_dir,'Trial',num2str(trialnum,'%02d'),extra_dir];
     quants = load([data_dir,'quantities.mat']);
+    disp(['Processing ',source_dir,'...']);
     % Parameters
     hfac = 5; % Factor to increase the size in the horizontal direction
     pix = [1024]; % Number of pixels in horizontal direction
     tfac = 12;  % Speedup in time
-    rotation = -148.5;  % Rotation angle to apply to all images (-33)
+    rotation = -147;  % Rotation angle to apply to all images (-33)
     num_files = Inf; % set to number of pictures desired; if Inf, will use all pictures
     fontsize = 10; % Fontsize for length and time scales
     show_time = 1; % Set nonzero if you want display of current time
@@ -28,11 +57,11 @@ for trialnum = trialnums
 %     if save_cropped | load_cropped
         crop_dir = [source_dir,'/cropped/'];
 %     end
-
-    output_dir = [source_dir,'/movie_files/Trial',num2str(trialnum),'/'];
-
-    if ~exist(output_dir,'dir');
-        mkdir(output_dir);
+    if movie_on
+        output_dir = [data_dir,'/movie_files/Trial',num2str(trialnum),'/'];
+        if ~exist(output_dir,'dir');
+            mkdir(output_dir);
+        end
     end
 
     if ~exist(crop_dir,'dir');
@@ -48,7 +77,9 @@ for trialnum = trialnums
             load([source_dir,'full_preprocessing_data.mat'],'crop_rect','rotation_angle');
             myrect = crop_rect;
             myrect_on = 1;
-            continue;
+            if ~length(trialnums)==1
+                continue;
+            end
         else
             load([source_dir,'full_preprocessing_data.mat'],'crop_rect','rotation_angle');
             myrect = crop_rect;
