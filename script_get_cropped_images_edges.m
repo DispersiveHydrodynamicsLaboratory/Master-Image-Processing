@@ -4,7 +4,7 @@ clear; close all; clc; % need to delete any potential movie objects
 process_files = 1; % Saves Timestamps
 find_rect     = 0; % Finds and saves cropping rectangle
 find_rot      = 0; % Finds and DISPLAYS first rotation angle (needs find_rect)
-save_cropped  = 1; % Saves cropped images
+save_cropped  = 0; % Saves cropped images
 load_cropped  = 0; % Uses cropped images instead of reprocessing originals
 check_scale   = 0; % Check formatting of the video image
 movie_on      = 0; % Actually save as movie (becoming less important)
@@ -131,6 +131,10 @@ for trialnum = trialnums
             % Convert to seconds 
             T(ii) = t(4)*60*60+t(5)*60+t(6)+1e-2*t(7);
         end
+            % Sort images by timestamps
+            [T,Tinds] = sort(T);
+            img_files = img_files(Tinds);
+
         save([source_dir,'img_timestamps.mat'],'img_files','T');
     end
 
@@ -138,9 +142,9 @@ for trialnum = trialnums
         load([source_dir,'img_timestamps.mat'],'img_files','T');
     end
 
-    % Sort images by timestamps
-    [T,Tinds] = sort(T);
-    img_files = img_files(Tinds);
+%     % Sort images by timestamps
+%     [T,Tinds] = sort(T);
+%     img_files = img_files(Tinds);
 
     % Make first time zero
     T = T - T(1);
