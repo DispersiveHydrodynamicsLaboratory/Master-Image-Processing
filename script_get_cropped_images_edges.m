@@ -40,7 +40,7 @@ else
 end
 
 for trialnum = trialnums
-    extra_dir = '/full_cam/';
+    extra_dir = '/bottom_cam/';
     source_dir = [data_dir,'Trial',num2str(trialnum,'%02d'),extra_dir];
     quants = load([data_dir,'quantities.mat']);
     disp(['Processing ',source_dir,'...']);
@@ -48,7 +48,7 @@ for trialnum = trialnums
     hfac = 5; % Factor to increase the size in the horizontal direction
     pix = [1024]; % Number of pixels in horizontal direction
     tfac = 12;  % Speedup in time
-    rotation = -147;  % Rotation angle to apply to all images (-33)
+    rotation = 1;  % Rotation angle to apply to all images (-33)
     num_files = Inf; % set to number of pictures desired; if Inf, will use all pictures
     fontsize = 10; % Fontsize for length and time scales
     show_time = 1; % Set nonzero if you want display of current time
@@ -87,7 +87,7 @@ for trialnum = trialnums
         end
 
     if length_scale
-        vlengthscale = quants.fullPixToCm; % Vertical (axial) length scale in cm/pixel, ; % Vertical (axial) length scale in cm/pixel, 
+        vlengthscale = quants.bottomPixToCm;%quants.fullPixToCm; % Vertical (axial) length scale in cm/pixel, ; % Vertical (axial) length scale in cm/pixel, 
                                 % if zero, then no scale is displayed
         vlength = 1; % Vertical length to display, in cm
     else

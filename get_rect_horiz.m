@@ -22,7 +22,8 @@ rect = 0;
 
 % Process images
 for ii = 1:n
-    img_dir = [data_dir,'Trial',sprintf('%02d',Trials(ii)),extra_dir,'/'];
+    disp(['Processing Trial ', sprintf('%02d',Trials(ii)),filesep,extra_dir]);
+    img_dir = [data_dir,'Trial',sprintf('%02d',Trials(ii)),extra_dir,filesep];
     % Get all dng files
     img_files = glob([img_dir,'*.dng']);
     if length(img_files) == 0
